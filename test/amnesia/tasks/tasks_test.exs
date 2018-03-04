@@ -6,7 +6,7 @@ defmodule Amnesia.TasksTest do
   describe "tasks" do
     alias Amnesia.Tasks.Task
 
-    @valid_attrs %{description: "some description", due_date: "2010-04-17 14:00:00.000000Z", title: "some title", completed: false}
+    @valid_attrs %{description: "some description", due_date: "3010-04-17 14:00:00.000000Z", title: "some title", completed: false}
     @update_attrs %{description: "some updated description", due_date: "2011-05-18 15:01:01.000000Z", title: "some updated title", completed: true}
     @invalid_attrs %{description: nil, due_date: nil, title: nil, completed: nil}
 
@@ -19,9 +19,18 @@ defmodule Amnesia.TasksTest do
       task
     end
 
-    test "list_tasks/0 returns all tasks" do
-      task = task_fixture()
-      assert Tasks.list_tasks() == [task]
+    def task_fixture_update(attrs) do
+      {:ok, task} = Tasks.update_task(task_fixture(), attrs)
+      
+      task
+    end
+
+    test "list_tasks/0 returns all tasks grouped" do
+      uncompleted_task = task_fixture()
+      completed_task = task_fixture_update(%{completed: true})
+      expired_task = task_fixture(%{due_date: "1010-04-17 14:00:00.000000Z"})
+
+      assert Tasks.list_tasks() == {[uncompleted_task], [completed_task], [expired_task]}
     end
 
     test "get_task!/1 returns the task with given id" do
@@ -32,7 +41,7 @@ defmodule Amnesia.TasksTest do
     test "create_task/1 with valid data creates a task" do
       assert {:ok, %Task{} = task} = Tasks.create_task(@valid_attrs)
       assert task.description == "some description"
-      assert task.due_date == DateTime.from_naive!(~N[2010-04-17 14:00:00.000000Z], "Etc/UTC")
+      assert task.due_date == DateTime.from_naive!(~N[3010-04-17 14:00:00.000000Z], "Etc/UTC")
       assert task.title == "some title"
       assert task.completed == false
     end

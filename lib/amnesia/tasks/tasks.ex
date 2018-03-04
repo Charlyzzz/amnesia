@@ -18,7 +18,7 @@ defmodule Amnesia.Tasks do
 
   """
   def list_tasks do
-    Repo.all(Task)
+    {uncompleted_tasks(), completed_tasks(), expired_tasks()}
   end
 
   @doc """
@@ -88,5 +88,17 @@ defmodule Amnesia.Tasks do
   """
   def delete_task(%Task{} = task) do
     Repo.delete(task)
+  end
+
+  defp completed_tasks do
+    Repo.all(from task in Task, where: task.completed == true)
+  end
+  
+  defp uncompleted_tasks do
+    Repo.all(from task in Task, where: task.completed == false and task.due_date > ^DateTime.utc_now)
+  end
+
+  defp expired_tasks do
+    Repo.all(from task in Task, where: task.completed == false and task.due_date <= ^DateTime.utc_now)
   end
 end

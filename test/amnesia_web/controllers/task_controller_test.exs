@@ -4,7 +4,7 @@ defmodule AmnesiaWeb.TaskControllerTest do
   alias Amnesia.Tasks
   alias Amnesia.Tasks.Task
 
-  @create_attrs %{description: "some description", due_date: "2010-04-17 14:00:00.000000Z", title: "some title"}
+  @create_attrs %{description: "some description", due_date: "3010-04-17 14:00:00.000000Z", title: "some title"}
   @update_attrs %{description: "some updated description", due_date: "2011-05-18 15:01:01.000000Z", title: "some updated title", completed: true}
   @invalid_attrs %{description: nil, due_date: nil, title: nil, completed: nil}
 
@@ -20,20 +20,24 @@ defmodule AmnesiaWeb.TaskControllerTest do
   describe "index" do
     test "lists all tasks", %{conn: conn} do
       conn = get conn, task_path(conn, :index)
-      assert json_response(conn, 200)["data"] == []
+      assert json_response(conn, 200) == %{
+        "uncompleted" => [],
+        "completed" => [],
+        "expired" => []
+      }
     end
   end
 
   describe "create task" do
     test "renders task when data is valid", %{conn: conn} do
       conn = post conn, task_path(conn, :create), task: @create_attrs
-      assert %{"id" => id} = json_response(conn, 201)["data"]
+      assert %{"id" => id} = json_response(conn, 201)["task"]
 
       conn = get conn, task_path(conn, :show, id)
-      assert json_response(conn, 200)["data"] == %{
+      assert json_response(conn, 200)["task"] == %{
         "id" => id,
         "description" => "some description",
-        "due_date" => "2010-04-17T14:00:00.000000Z",
+        "dueDate" => "3010-04-17T14:00:00.000000Z",
         "title" => "some title",
         "completed" => false}
     end
@@ -49,13 +53,13 @@ defmodule AmnesiaWeb.TaskControllerTest do
 
     test "renders task when data is valid", %{conn: conn, task: %Task{id: id} = task} do
       conn = put conn, task_path(conn, :update, task), task: @update_attrs
-      assert %{"id" => ^id} = json_response(conn, 200)["data"]
+      assert %{"id" => ^id} = json_response(conn, 200)["task"]
 
       conn = get conn, task_path(conn, :show, id)
-      assert json_response(conn, 200)["data"] == %{
+      assert json_response(conn, 200)["task"] == %{
         "id" => id,
         "description" => "some updated description",
-        "due_date" => "2011-05-18T15:01:01.000000Z",
+        "dueDate" => "2011-05-18T15:01:01.000000Z",
         "title" => "some updated title",
         "completed" => true}
     end
