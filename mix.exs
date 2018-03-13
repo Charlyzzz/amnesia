@@ -39,7 +39,8 @@ defmodule Amnesia.Mixfile do
       {:postgrex, ">= 0.0.0"},
       {:gettext, "~> 0.11"},
       {:cowboy, "~> 1.0"},
-      {:proper_case, "~> 1.0.2"}
+      {:proper_case, "~> 1.0.2"},
+      {:corsica, "~> 1.0"}
     ]
   end
 

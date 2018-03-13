@@ -35,6 +35,8 @@ defmodule AmnesiaWeb.Endpoint do
     key: "_amnesia_key",
     signing_salt: "CqGEWpCh"
 
+  plug Corsica, origins: "*"
+
   plug AmnesiaWeb.Router
 
   @doc """
